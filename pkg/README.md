@@ -48,7 +48,7 @@ export VERTEX_LOCATION="global"
 # If using Anthropic and need to specify a specific model
 export ANTHROPIC_MODEL="claude-sonnet-4-5@20250929"
 # Path to MCP server binary (if USE_MCP=true)
-export MCP_SERVER_PATH="./gke-mcp/gke-mcp"
+export MCP_SERVER_PATH="third_party/gke-mcp/gke-mcp"
 ```
 
 ### 2. Running via Pytest
