@@ -78,7 +78,7 @@ def execute_agent(agent_type, agent_target, prompt, context):
   if agent_type in ["cli", "binary"]:
     return run_cli_agent(agent_target, prompt, context)
   elif agent_type == "api":
-    mcp_server_path = os.environ.get("MCP_SERVER_PATH", "./gke-mcp")
+    mcp_server_path = os.environ.get("MCP_SERVER_PATH", "third_party/gke-mcp/gke-mcp")
     provider = os.environ.get("PROVIDER", "gemini")
     if provider == "gemini":
       llm_client = GeminiClientAdapter()
