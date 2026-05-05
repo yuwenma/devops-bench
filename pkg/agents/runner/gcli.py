@@ -5,6 +5,7 @@ import glob
 import time
 import subprocess
 from deepeval.tracing import observe
+from pkg.agents.runner.openclaw import run_openclaw_agent
 
 
 def parse_gemini_cli_output(raw_output: str) -> dict:
@@ -103,14 +104,16 @@ def extract_trajectory_from_session(session_id: str) -> dict:
 
 
 @observe()
-def run_cli_agent(bin_path, prompt, context):
+def run_cli_agent(agent_target, prompt, context):
     """Runs an external binary agent."""
     input_data = json.dumps({"goal": prompt, "context": context})
-    args = [bin_path]
+    args = [agent_target]
     use_stdin = True
-    if "gemini" in bin_path:
+    if "gemini" in agent_target:
         args.extend(["-o", "json", "-p", prompt])
         use_stdin = False
+    elif "openclaw" in agent_target:
+        return run_openclaw_agent(prompt, context)
         
     start_time = time.time()
     try:
