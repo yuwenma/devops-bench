@@ -1,0 +1,50 @@
+task_id: 5
+name: "fix-config"
+prompt: |
+  Apply the manifest change to cluster {{GKE_CLUSTER_NAME}} in project {{GCP_PROJECT_ID}}.
+
+  ```
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app: hypercomputer-d1-frontend
+    name: hypercomputer-d1-frontend
+    namespace: default
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: hypercomputer-d1-frontend
+    template:
+      metadata:
+        labels:
+          app: hypercomputer-d1-frontend
+      spec:
+        automountServiceAccountToken: true
+        containers:
+        - env:
+          - name: APP_VERSION
+            value: v1.10
+          - name: VLLM_API_URL
+            value: http://hypercomputer-d1-vllm-service:8000/v1/chat/completions
+          - name: MODEL_NAME
+            value: google-gemma-3-12b-it
+          - name: USE_GEMINI_API
+            value: 'false'
+          image: gcr.io/gke-e2e-images/hypercomputer:v1.10
+          name: frontend
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+        serviceAccount: hypercomputer-d1-vllm-sa
+        serviceAccountName: hypercomputer-d1-vllm-sa
+  ```
+expected_output: |
+  critical requirements: 
+
+  - Identify the intent to update the 'hypercomputer-d1-frontend' deployment in cluster '{{GKE_CLUSTER_NAME}}' and project '{{GCP_PROJECT_ID}}'.
+  - Confirm that 'USE_GEMINI_API' is set to 'false' and 'VLLM_API_URL' is correctly pointed to the local service.
+  - Validate that the agent actually applied the manifest to the cluster using tools (e.g., kubectl) rather than just showing the YAML.
+
+  Expected Manifest Generated: N/A, not a manifest generation request.

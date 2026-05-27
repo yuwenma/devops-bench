@@ -1,0 +1,82 @@
+import os
+import sys
+import argparse
+
+# Ensure project root is in path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from deployers.gcp.gcp_deployer import GCPDeployer
+from deployers.kind.kind_deployer import KinDDeployer
+
+def main():
+    parser = argparse.ArgumentParser(description="DevOps Bench Infra Manager")
+    subparsers = parser.add_subparsers(dest="provider", required=True, help="Cloud provider")
+    
+    # GCP Subparser
+    gcp_parser = subparsers.add_parser("gcp", help="GCP operations")
+    gcp_subparsers = gcp_parser.add_subparsers(dest="action", required=True, help="Action")
+    
+    # Add actions for GCP
+    for action in ["up", "down", "info"]:
+        p = gcp_subparsers.add_parser(action, help=f"Perform {action}")
+        p.add_argument("--project", help="GCP Project ID")
+        p.add_argument("--cluster-name", help="Name of the cluster")
+        p.add_argument("--zone", default="us-central1-a", help="GCP Zone")
+
+    # KinD Subparser
+    kind_parser = subparsers.add_parser("kind", help="KinD local operations")
+    kind_subparsers = kind_parser.add_subparsers(dest="action", required=True, help="Action")
+    
+    # Add actions for KinD
+    for action in ["up", "down", "info"]:
+        p = kind_subparsers.add_parser(action, help=f"Perform {action}")
+        p.add_argument("--cluster-name", default="devops-bench-kind", help="Name of the local KinD cluster")
+            
+    args = parser.parse_args()
+    
+    if args.provider == "gcp":
+        project = args.project or os.environ.get("GCP_PROJECT_ID")
+        cluster_name = args.cluster_name or os.environ.get("GKE_CLUSTER_NAME")
+        zone = args.zone or os.environ.get("GCP_ZONE", "us-central1-a")
+        
+        if not project or not cluster_name:
+            print("Error: Project and Cluster Name must be specified via flags or environment variables (GCP_PROJECT_ID, GKE_CLUSTER_NAME).", file=sys.stderr)
+            sys.exit(1)
+            
+        deployer = GCPDeployer(project=project, zone=zone, cluster_name=cluster_name)
+        
+        if args.action == "up":
+            print(f"Bringing up cluster {cluster_name}...")
+            deployer.up()
+        elif args.action == "down":
+            print(f"Tearing down cluster {cluster_name}...")
+            deployer.down()
+        elif args.action == "info":
+            import json
+            print(json.dumps(deployer.get_cluster_info(), indent=2))
+        else:
+            print(f"Critical Error: Unsupported action '{args.action}' for provider 'gcp'", file=sys.stderr)
+            sys.exit(1)
+            
+    elif args.provider == "kind":
+        cluster_name = args.cluster_name or os.environ.get("KUBERNETES_CLUSTER_NAME", "devops-bench-kind")
+        deployer = KinDDeployer(cluster_name=cluster_name)
+        
+        if args.action == "up":
+            print(f"Bringing up local KinD cluster {cluster_name}...")
+            deployer.up()
+        elif args.action == "down":
+            print(f"Tearing down local KinD cluster {cluster_name}...")
+            deployer.down()
+        elif args.action == "info":
+            import json
+            print(json.dumps(deployer.get_cluster_info(), indent=2))
+        else:
+            print(f"Critical Error: Unsupported action '{args.action}' for provider 'kind'", file=sys.stderr)
+            sys.exit(1)
+    else:
+        print(f"Critical Error: Unsupported provider '{args.provider}'", file=sys.stderr)
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()
+
