@@ -7,7 +7,7 @@ The goal is to measure and compare the capability of different agents in complet
 
 ## Live Benchmark Results
 
-See [live leaderboard](https://gke-labs.github.io/devops-bench/) for the latest benchmark results. The data evaluates the following two distinct agent configurations (more to come later) to measure the value-add of domain-specific enhancements.
+See [live leaderboard](https://kubernetes-sigs.github.io/devops-bench/) for the latest benchmark results. The data evaluates the following two distinct agent configurations (more to come later) to measure the value-add of domain-specific enhancements.
 
 **Antigravity Agent**
 operates using the default configurations and prompts without advanced cloud-specific auxiliary intelligence or specialized guardrails. It serves as the baseline for performance, focusing on the agent's ability to execute raw Kubernetes tasks.
@@ -28,7 +28,7 @@ While our initial results are centered on the scale and sophistication of **Goog
 
 * **Proactive Troubleshooting**: Can an agent move from detecting a pod failure to diagnosing the root cause and executing a fix?
 
-The benchmark currently consists of 5 tasks simulating realistic deployment scenarios, which we plan to expand further.  You can learn more about the tasks [here](https://github.com/gke-labs/devops-bench/tree/main/tasks).
+The benchmark currently consists of 5 tasks simulating realistic deployment scenarios, which we plan to expand further.  You can learn more about the tasks [here](https://github.com/kubernetes-sigs/devops-bench/tree/main/tasks).
 
 ## Evaluation Metrics
 We evaluate the 2 agentic setups on the following key metrics, moving beyond simple pass/fail criteria to understand how the agent achieved the result:
@@ -76,7 +76,7 @@ This metric assesses the agent's execution path, ensuring it doesn't get stuck i
 * Score 2: Major inefficiencies, loops, or multiple failed calls.
 * Score 1: Complete failure, stuck in loop, misunderstood tools.
 
-You can look at the actual rubrics [here](https://github.com/gke-labs/devops-bench/tree/main/skills).
+You can look at the actual rubrics [here](https://github.com/kubernetes-sigs/devops-bench/tree/main/skills).
 
 ## Running Benchmarks locally
 Evaluations can be performed by running the benchmark tasks against your agent and manually or programmatically applying the LLM-as-a-judge method using the Skill based rubrics provided in this repository.
@@ -94,7 +94,7 @@ Feed each task to your configured agent and capture the agent's final response f
 **Note on Infrastructure**: The benchmark now supports automated infrastructure setup via Terraform. If a task includes an `infrastructure` block, the evaluator will automatically provision the required environment before running the agent.
 
 ### Step 3: Evaluate Responses with LLM-as-a-Judge
-To evaluate the results, use a capable LLM to score the agent's responses against the specific criteria defined in the repository's [skills](https://github.com/gke-labs/devops-bench/tree/main/skills) directory.
+To evaluate the results, use a capable LLM to score the agent's responses against the specific criteria defined in the repository's [skills](https://github.com/kubernetes-sigs/devops-bench/tree/main/skills) directory.
 
 * **Choose a Judge Model**: Select a powerful LLM to act as your judge (e.g., gemini-3.1-pro-preview or similar).
 **Note**: The results in this repository use gemini-3.1-pro-preview for outcome evaluation.
